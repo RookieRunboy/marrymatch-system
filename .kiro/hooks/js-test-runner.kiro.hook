@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "保存时运行测试",
+  "description": "当保存JS文件时自动运行相关测试",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": []
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "请运行与刚才修改的文件相关的测试用例，如果测试失败请告诉我具体的错误信息和修复建议。"
+  }
+}
