@@ -1,0 +1,20 @@
+{
+  "path": "/Users/runbo/match/frontend/dist",
+  "desc": "这是一个Vue.js相亲评分系统前端应用，提供用户界面、评分功能、数据分析和图表展示等功能，现在包含GitHub主页链接",
+  "id": "2b55805904ff439eb3c10a1c483f18f9",
+  "data": {
+    "spaceKey": "2b55805904ff439eb3c10a1c483f18f9",
+    "connections": {
+      "webIDE": "https://2b55805904ff439eb3c10a1c483f18f9.ap-singapore.cloudstudio.club",
+      "preview": "",
+      "api": "https://2b55805904ff439eb3c10a1c483f18f9--api.ap-singapore.cloudstudio.club",
+      "pty": "https://2b55805904ff439eb3c10a1c483f18f9--pty.ap-singapore.cloudstudio.club"
+    }
+  },
+  "config": {
+    "api": "https://2b55805904ff439eb3c10a1c483f18f9--api.ap-singapore.cloudstudio.club",
+    "pty": "https://2b55805904ff439eb3c10a1c483f18f9--pty.ap-singapore.cloudstudio.club",
+    "region": "ap-shanghai",
+    "spaceKey": "2b55805904ff439eb3c10a1c483f18f9"
+  }
+}

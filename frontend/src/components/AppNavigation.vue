@@ -13,39 +13,18 @@
       
       <div class="nav-items">
         <el-menu-item 
-          v-for="route in routes" 
+          v-for="route in allRoutes" 
           :key="route.name"
-          :index="route.path"
+          :index="route.path || route.command"
           class="nav-item"
+          @click="route.command ? handleCommand(route.command) : null"
         >
           <el-icon><component :is="route.meta.icon" /></el-icon>
           <span>{{ route.meta.title }}</span>
         </el-menu-item>
       </div>
       
-      <div class="nav-actions">
-        <el-dropdown @command="handleCommand">
-          <el-button circle>
-            <el-icon><User /></el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="profile">
-                <el-icon><User /></el-icon>
-                个人资料
-              </el-dropdown-item>
-              <el-dropdown-item command="theme">
-                <el-icon><Moon /></el-icon>
-                切换主题
-              </el-dropdown-item>
-              <el-dropdown-item divided command="logout">
-                <el-icon><SwitchButton /></el-icon>
-                退出登录
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </div>
+
     </el-menu>
   </div>
 </template>
@@ -58,10 +37,11 @@ import {
   HomeFilled, 
   House, 
   Clock, 
-  Setting, 
+  Connection,
   User, 
   Moon, 
-  SwitchButton 
+  SwitchButton,
+  Link
 } from '@element-plus/icons-vue'
 import { useAppStore } from '@/stores/appStore'
 
@@ -71,10 +51,11 @@ export default {
     HomeFilled,
     House,
     Clock,
-    Setting,
+    Connection,
     User,
     Moon,
-    SwitchButton
+    SwitchButton,
+    Link
   },
   setup() {
     const router = useRouter()
@@ -86,8 +67,24 @@ export default {
         path: '/',
         name: 'Home',
         meta: {
-          title: '首页',
+          title: '模式选择',
           icon: 'House'
+        }
+      },
+      {
+        path: '/match',
+        name: 'MatchAnalysis',
+        meta: {
+          title: '匹配分析',
+          icon: 'Connection'
+        }
+      },
+      {
+        path: '/single',
+        name: 'SingleEvaluation',
+        meta: {
+          title: '个人评估',
+          icon: 'User'
         }
       },
       {
@@ -97,16 +94,47 @@ export default {
           title: '历史记录',
           icon: 'Clock'
         }
+      }
+    ]
+    
+    const actionItems = [
+      {
+        command: 'profile',
+        name: 'Profile',
+        meta: {
+          title: '个人资料',
+          icon: 'User'
+        }
       },
       {
-        path: '/settings',
-        name: 'Settings',
+        command: 'theme',
+        name: 'Theme',
         meta: {
-          title: '设置',
-          icon: 'Setting'
+          title: '切换主题',
+          icon: 'Moon'
+        }
+      },
+      {
+        command: 'github',
+        name: 'GitHub',
+        meta: {
+          title: 'GitHub',
+          icon: 'Link'
+        }
+      },
+      {
+        command: 'logout',
+        name: 'Logout',
+        meta: {
+          title: '退出登录',
+          icon: 'SwitchButton'
         }
       }
     ]
+    
+    const allRoutes = computed(() => {
+      return [...routes, ...actionItems]
+    })
     
     const currentRoute = computed(() => {
       return route.path
@@ -128,17 +156,26 @@ export default {
           appStore.setTheme(newTheme)
           ElMessage.success(`已切换到${newTheme === 'light' ? '浅色' : '深色'}主题`)
           break
+        case 'github':
+          openGitHub()
+          break
         case 'logout':
           ElMessage.info('退出登录功能待实现')
           break
       }
     }
     
+    const openGitHub = () => {
+      window.open('https://github.com/RookieRunboy', '_blank')
+    }
+    
     return {
       routes,
+      allRoutes,
       currentRoute,
       handleSelect,
-      handleCommand
+      handleCommand,
+      openGitHub
     }
   }
 }
@@ -183,9 +220,7 @@ export default {
   gap: 6px;
 }
 
-.nav-actions {
-  margin-left: auto;
-}
+
 
 :deep(.el-menu--horizontal .el-menu-item) {
   border-bottom: none;
@@ -211,6 +246,10 @@ export default {
   
   .nav-item span {
     display: none;
+  }
+  
+  .nav-actions {
+    gap: 5px;
   }
 }
 </style>

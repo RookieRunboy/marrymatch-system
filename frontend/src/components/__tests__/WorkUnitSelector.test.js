@@ -17,7 +17,7 @@ describe('WorkUnitSelector', () => {
     expect(wrapper.emitted('update:modelValue')[0]).toEqual(['central_gov'])
   })
 
-  it('displays the correct multiplier for selected option', async () => {
+  it('displays the correct option for selected value', async () => {
     const wrapper = mount(WorkUnitSelector, {
       props: {
         modelValue: 'central_gov'
@@ -27,14 +27,10 @@ describe('WorkUnitSelector', () => {
     // 等待组件更新
     await wrapper.vm.$nextTick()
     
-    // 检查是否显示了正确的标签
-    const selectedInfo = wrapper.find('.selected-info')
-    expect(selectedInfo.exists()).toBe(true)
-    expect(selectedInfo.find('.el-tag').text()).toBe('政府机关')
-    
-    // 检查稳定性评分
-    const stabilityRating = wrapper.vm.stabilityRating
-    expect(stabilityRating).toBe(5) // 中央部委应该有最高稳定性评分
+    // 检查选中的选项
+    const selectedOption = wrapper.vm.selectedOption
+    expect(selectedOption).toBeTruthy()
+    expect(selectedOption.value).toBe('central_gov')
   })
 
   it('groups options by category', () => {

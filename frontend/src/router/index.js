@@ -1,16 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import ModeSelection from '../views/ModeSelection.vue'
 import Home from '../views/Home.vue'
+import SingleEvaluation from '../views/SingleEvaluation.vue'
 import History from '../views/History.vue'
-import Settings from '../views/Settings.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'ModeSelection',
+    component: ModeSelection,
+    meta: {
+      title: '模式选择',
+      icon: 'House'
+    }
+  },
+  {
+    path: '/match',
+    name: 'MatchAnalysis',
     component: Home,
     meta: {
-      title: '首页',
-      icon: 'House'
+      title: '匹配分析',
+      icon: 'Connection'
+    }
+  },
+  {
+    path: '/single',
+    name: 'SingleEvaluation',
+    component: SingleEvaluation,
+    meta: {
+      title: '个人评估',
+      icon: 'User'
     }
   },
   {
@@ -22,15 +41,7 @@ const routes = [
       icon: 'Clock'
     }
   },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: Settings,
-    meta: {
-      title: '设置',
-      icon: 'Setting'
-    }
-  },
+
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',

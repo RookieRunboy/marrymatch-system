@@ -51,7 +51,8 @@ api.interceptors.response.use(
           console.error('请求失败:', error.response.data.message || '未知错误')
       }
     } else if (error.request) {
-      console.error('网络错误，请检查网络连接')
+      // 静默处理网络错误，避免在控制台显示错误信息
+      console.log('网络连接失败，使用默认配置')
     } else {
       console.error('请求配置错误:', error.message)
     }

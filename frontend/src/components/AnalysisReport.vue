@@ -228,79 +228,95 @@
       <el-tab-pane label="竞争对比" name="comparison">
         <div class="tab-content">
           
-          <!-- 同龄人对比 -->
-          <el-card class="peer-comparison">
-            <template #header>
-              <div class="section-header">
-                <el-icon><UserFilled /></el-icon>
-                <span>同龄人竞争力对比</span>
-              </div>
-            </template>
-            
-            <div class="comparison-content">
-              <div class="comparison-chart">
-                <canvas ref="comparisonChart" width="400" height="200"></canvas>
-              </div>
+          <!-- 情侣对比分析 - 仅在匹配模式下显示 -->
+          <div v-if="isMatchMode && matchData">
+            <CoupleComparison
+              :male-score="matchData.maleScore"
+              :female-score="matchData.femaleScore"
+              :match-score="matchData.matchScore"
+              :male-detailed-scores="matchData.maleDetailed"
+              :female-detailed-scores="matchData.femaleDetailed"
+              :male-data="matchData.maleData"
+              :female-data="matchData.femaleData"
+            />
+          </div>
+          
+          <!-- 个人分析模式下的对比内容 -->
+          <div v-else>
+            <!-- 同龄人对比 -->
+            <el-card class="peer-comparison">
+              <template #header>
+                <div class="section-header">
+                  <el-icon><UserFilled /></el-icon>
+                  <span>同龄人竞争力对比</span>
+                </div>
+              </template>
               
-              <div class="comparison-stats">
-                <div class="stat-item">
-                  <div class="stat-value">{{ peerComparison.betterThan }}%</div>
-                  <div class="stat-label">超越同龄人</div>
+              <div class="comparison-content">
+                <div class="comparison-chart">
+                  <canvas ref="comparisonChart" width="400" height="200"></canvas>
                 </div>
-                <div class="stat-item">
-                  <div class="stat-value">{{ peerComparison.rank }}</div>
-                  <div class="stat-label">同龄人排名</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">{{ peerComparison.averageGap }}</div>
-                  <div class="stat-label">与平均分差距</div>
-                </div>
-              </div>
-            </div>
-          </el-card>
-
-          <!-- 理想匹配对象画像 -->
-          <el-card class="ideal-match">
-            <template #header>
-              <div class="section-header">
-                <el-icon><Connection /></el-icon>
-                <span>理想匹配对象画像</span>
-              </div>
-            </template>
-            
-            <div class="match-profile">
-              <div class="profile-section">
-                <h4>基于您的条件，推荐匹配对象特征:</h4>
-                <div class="profile-grid">
-                  <div 
-                    v-for="characteristic in idealMatchProfile" 
-                    :key="characteristic.category"
-                    class="profile-item"
-                  >
-                    <div class="profile-category">{{ characteristic.category }}</div>
-                    <div class="profile-recommendations">
-                      <el-tag 
-                        v-for="rec in characteristic.recommendations" 
-                        :key="rec"
-                        type="info"
-                        size="small"
-                        class="profile-tag"
-                      >
-                        {{ rec }}
-                      </el-tag>
-                    </div>
+                
+                <div class="comparison-stats">
+                  <div class="stat-item">
+                    <div class="stat-value">{{ peerComparison.betterThan }}%</div>
+                    <div class="stat-label">超越同龄人</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-value">{{ peerComparison.rank }}</div>
+                    <div class="stat-label">同龄人排名</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-value">{{ peerComparison.averageGap }}</div>
+                    <div class="stat-label">与平均分差距</div>
                   </div>
                 </div>
               </div>
+            </el-card>
+
+            <!-- 理想匹配对象画像 -->
+            <el-card class="ideal-match">
+              <template #header>
+                <div class="section-header">
+                  <el-icon><Connection /></el-icon>
+                  <span>理想匹配对象画像</span>
+                </div>
+              </template>
               
-              <div class="compatibility-tips">
-                <h4>匹配兼容性建议:</h4>
-                <ul class="tips-list">
-                  <li v-for="tip in compatibilityTips" :key="tip">{{ tip }}</li>
-                </ul>
+              <div class="match-profile">
+                <div class="profile-section">
+                  <h4>基于您的条件，推荐匹配对象特征:</h4>
+                  <div class="profile-grid">
+                    <div 
+                      v-for="characteristic in idealMatchProfile" 
+                      :key="characteristic.category"
+                      class="profile-item"
+                    >
+                      <div class="profile-category">{{ characteristic.category }}</div>
+                      <div class="profile-recommendations">
+                        <el-tag 
+                          v-for="rec in characteristic.recommendations" 
+                          :key="rec"
+                          type="info"
+                          size="small"
+                          class="profile-tag"
+                        >
+                          {{ rec }}
+                        </el-tag>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="compatibility-tips">
+                  <h4>匹配兼容性建议:</h4>
+                  <ul class="tips-list">
+                    <li v-for="tip in compatibilityTips" :key="tip">{{ tip }}</li>
+                  </ul>
+                </div>
               </div>
-            </div>
-          </el-card>
+            </el-card>
+          </div>
 
         </div>
       </el-tab-pane>
@@ -320,6 +336,7 @@ import {
   UserFilled,
   Connection
 } from '@element-plus/icons-vue'
+import CoupleComparison from './CoupleComparison.vue'
 
 export default {
   name: 'AnalysisReport',
@@ -331,7 +348,8 @@ export default {
     Promotion,
     Calendar,
     UserFilled,
-    Connection
+    Connection,
+    CoupleComparison
   },
   props: {
     // 个人评分数据

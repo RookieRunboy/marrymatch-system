@@ -312,6 +312,250 @@ export const calculateAllScores = (maleForm, femaleForm) => {
 }
 
 /**
+ * 生成详细的改进建议
+ * @param {Object} person - 个人信息对象
+ * @param {Object} detailedScores - 详细评分对象
+ * @returns {Array} 改进建议数组
+ */
+export const generateDetailedImprovementSuggestions = (person, detailedScores) => {
+  const suggestions = []
+  
+  // 工作收入改进建议
+  if (detailedScores.workIncome < 70) {
+    const currentMultiplier = WORK_UNIT_MULTIPLIERS[person.workUnit] || 0.8
+    const adjustedIncome = person.salary * currentMultiplier
+    
+    if (currentMultiplier < 2.0) {
+      suggestions.push({
+        category: '工作收入',
+        priority: 'high',
+        suggestion: '考虑转向更稳定的工作单位，如政府机关或国有企业',
+        actionItems: [
+          '关注公务员考试信息',
+          '了解国企招聘机会',
+          '提升专业技能以增加竞争力'
+        ]
+      })
+    }
+    
+    if (person.salary < 5) {
+      suggestions.push({
+        category: '工作收入',
+        priority: 'high',
+        suggestion: '提升基础薪资水平',
+        actionItems: [
+          '寻求内部晋升机会',
+          '考虑跳槽到薪资更高的公司',
+          '发展副业增加收入来源',
+          '提升专业技能获得加薪'
+        ]
+      })
+    }
+  }
+  
+  // 教育背景改进建议
+  if (detailedScores.education < 75) {
+    if (person.education === 'bachelor' || person.education === 'college') {
+      suggestions.push({
+        category: '教育背景',
+        priority: 'medium',
+        suggestion: '考虑继续深造提升学历',
+        actionItems: [
+          '报考研究生考试',
+          '申请在职MBA项目',
+          '考虑海外留学机会',
+          '参加专业认证考试'
+        ]
+      })
+    }
+    
+    if (person.universityTier && ['tier2', 'private'].includes(person.universityTier)) {
+      suggestions.push({
+        category: '教育背景',
+        priority: 'medium',
+        suggestion: '通过继续教育弥补院校背景不足',
+        actionItems: [
+          '申请知名院校的研究生项目',
+          '参加名校的培训课程',
+          '获得行业权威认证',
+          '发表学术论文或专业文章'
+        ]
+      })
+    }
+  }
+  
+  // 外在条件改进建议
+  if (detailedScores.physical < 70) {
+    const bmi = person.weight / ((person.height / 100) ** 2)
+    
+    if (bmi > 25 || bmi < 18.5) {
+      suggestions.push({
+        category: '外在条件',
+        priority: 'medium',
+        suggestion: '改善身材管理',
+        actionItems: [
+          '制定科学的饮食计划',
+          '建立规律的运动习惯',
+          '寻求专业健身指导',
+          '定期体检监控健康状况'
+        ]
+      })
+    }
+    
+    if (person.appearance && ['below_average', 'poor'].includes(person.appearance)) {
+      suggestions.push({
+        category: '外在条件',
+        priority: 'medium',
+        suggestion: '提升个人形象',
+        actionItems: [
+          '改善穿衣搭配风格',
+          '注意个人卫生和仪表',
+          '考虑适当的美容护理',
+          '培养良好的气质和谈吐'
+        ]
+      })
+    }
+    
+    if (person.gender === 'male' && person.height < 170) {
+      suggestions.push({
+        category: '外在条件',
+        priority: 'low',
+        suggestion: '通过其他方式弥补身高不足',
+        actionItems: [
+          '选择合适的服装增加视觉身高',
+          '培养自信的气质',
+          '发展其他优势特质',
+          '保持良好的身材比例'
+        ]
+      })
+    }
+  }
+  
+  // 资产住房改进建议
+  if (detailedScores.assets < 70) {
+    if (['rent', 'live_with_parents'].includes(person.housingStatus)) {
+      suggestions.push({
+        category: '资产住房',
+        priority: 'high',
+        suggestion: '改善住房状况',
+        actionItems: [
+          '制定购房储蓄计划',
+          '了解房贷政策和优惠',
+          '考虑先购买小户型房产',
+          '关注房价相对较低的区域'
+        ]
+      })
+    }
+    
+    if (person.savings < 50) {
+      suggestions.push({
+        category: '资产住房',
+        priority: 'high',
+        suggestion: '增加储蓄和投资',
+        actionItems: [
+          '制定月度储蓄计划',
+          '学习基础的投资理财知识',
+          '开设定期存款账户',
+          '考虑稳健的投资产品'
+        ]
+      })
+    }
+  }
+  
+  // 家庭背景改进建议（相对较少，因为权重较低）
+  if (detailedScores.family < 60) {
+    suggestions.push({
+      category: '家庭背景',
+      priority: 'low',
+      suggestion: '发挥家庭支持作用',
+      actionItems: [
+        '与家人沟通获得更多支持',
+        '合理规划家庭资源',
+        '考虑家庭投资机会',
+        '维护良好的家庭关系'
+      ]
+    })
+  }
+  
+  return suggestions
+}
+
+/**
+ * 生成竞争优势分析
+ * @param {Object} person - 个人信息对象
+ * @param {Object} detailedScores - 详细评分对象
+ * @returns {Array} 竞争优势数组
+ */
+export const generateCompetitiveAdvantages = (person, detailedScores) => {
+  const advantages = []
+  
+  // 工作收入优势
+  if (detailedScores.workIncome >= 85) {
+    const multiplier = WORK_UNIT_MULTIPLIERS[person.workUnit] || 0.8
+    if (multiplier >= 2.0) {
+      advantages.push('工作单位稳定性强，社会资源丰富')
+    }
+    if (person.salary >= 10) {
+      advantages.push('收入水平位于市场前列')
+    }
+  }
+  
+  // 教育背景优势
+  if (detailedScores.education >= 85) {
+    if (person.universityTier === 'qingbei') {
+      advantages.push('顶尖院校背景，教育资源优质')
+    } else if (person.universityTier === 'c985') {
+      advantages.push('985院校背景，学术能力突出')
+    }
+    if (person.education === 'phd') {
+      advantages.push('博士学历，专业能力强')
+    } else if (person.education === 'master') {
+      advantages.push('硕士学历，知识结构完善')
+    }
+  }
+  
+  // 外在条件优势
+  if (detailedScores.physical >= 80) {
+    if (person.appearance === 'excellent') {
+      advantages.push('外貌条件优秀，第一印象佳')
+    }
+    const bmi = person.weight / ((person.height / 100) ** 2)
+    if (bmi >= 18.5 && bmi <= 24) {
+      advantages.push('身材比例良好，健康状况佳')
+    }
+    if (person.gender === 'male' && person.height >= 180) {
+      advantages.push('身高优势明显')
+    } else if (person.gender === 'female' && person.height >= 165) {
+      advantages.push('身高条件良好')
+    }
+  }
+  
+  // 资产住房优势
+  if (detailedScores.assets >= 80) {
+    if (person.housingStatus === 'beijing_house_inner') {
+      advantages.push('拥有北京核心区域房产，资产价值高')
+    } else if (person.housingStatus === 'beijing_house_outer') {
+      advantages.push('拥有北京房产，居住条件稳定')
+    }
+    if (person.savings >= 200) {
+      advantages.push('储蓄充足，财务状况良好')
+    }
+  }
+  
+  // 家庭背景优势
+  if (detailedScores.family >= 80) {
+    if (person.parentsIncome >= 3) {
+      advantages.push('家庭经济条件优越')
+    }
+    if (!person.onlyChild) {
+      advantages.push('非独生子女，家庭压力相对较小')
+    }
+  }
+  
+  return advantages
+}
+
+/**
  * 生成市场价值分析
  * @param {Object} person - 个人信息对象
  * @returns {Object} 市场价值分析对象
@@ -320,37 +564,33 @@ export const generateMarketValueAnalysis = (person) => {
   const detailedScores = calculateDetailedScores(person)
   const score = detailedScores.total
   
-  // 简单的百分位计算（实际应用中可以基于真实数据）
+  // 基于评分计算市场百分位
   let percentile = 50
   if (score >= 90) percentile = 95
+  else if (score >= 85) percentile = 90
   else if (score >= 80) percentile = 85
-  else if (score >= 70) percentile = 70
-  else if (score >= 60) percentile = 55
-  else if (score >= 50) percentile = 40
-  else percentile = 25
+  else if (score >= 75) percentile = 75
+  else if (score >= 70) percentile = 65
+  else if (score >= 65) percentile = 55
+  else if (score >= 60) percentile = 45
+  else if (score >= 55) percentile = 35
+  else if (score >= 50) percentile = 25
+  else percentile = 15
   
-  // 识别优势领域
-  const strengths = []
-  const improvements = []
+  // 生成竞争优势和改进建议
+  const competitiveAdvantages = generateCompetitiveAdvantages(person, detailedScores)
+  const improvementSuggestions = generateDetailedImprovementSuggestions(person, detailedScores)
   
-  if (detailedScores.workIncome >= 80) strengths.push('工作收入优势明显')
-  else if (detailedScores.workIncome < 60) improvements.push('提升收入或选择更稳定的工作')
-  
-  if (detailedScores.education >= 85) strengths.push('教育背景优秀')
-  else if (detailedScores.education < 70) improvements.push('考虑继续教育提升学历')
-  
-  if (detailedScores.physical >= 80) strengths.push('外在条件良好')
-  else if (detailedScores.physical < 60) improvements.push('注意身材管理和形象提升')
-  
-  if (detailedScores.assets >= 80) strengths.push('资产状况良好')
-  else if (detailedScores.assets < 60) improvements.push('积累财富，考虑购房')
+  // 将改进建议转换为简单的文本数组（保持向后兼容）
+  const improvementAreas = improvementSuggestions.map(item => item.suggestion)
   
   return {
     overallScore: score,
     marketPercentile: percentile,
-    competitiveAdvantages: strengths,
-    improvementAreas: improvements,
-    detailedBreakdown: detailedScores
+    competitiveAdvantages,
+    improvementAreas,
+    detailedBreakdown: detailedScores,
+    detailedImprovements: improvementSuggestions
   }
 }
 

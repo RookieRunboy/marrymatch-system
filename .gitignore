@@ -122,3 +122,8 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+
+# AI Development Tools
+.trae/
+.kiro/
+.continue/

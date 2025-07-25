@@ -12,6 +12,37 @@
       <!-- 重新排序，强调物质条件 -->
       <el-collapse v-model="activeCollapse" class="form-collapse">
         
+        <!-- 基本信息 - 在单人模式下显示 -->
+        <el-collapse-item v-if="isSingleMode" name="basic" class="priority-section">
+          <template #title>
+            <div class="section-title">
+              <el-icon class="section-icon"><User /></el-icon>
+              <span class="section-text">基本信息</span>
+              <el-tag size="small" type="primary" class="weight-tag">必填</el-tag>
+            </div>
+          </template>
+          
+          <div class="section-content">
+            <el-form-item label="性别" required>
+              <el-radio-group v-model="formData.gender" @change="handleChange">
+                <el-radio label="male">男</el-radio>
+                <el-radio label="female">女</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            
+            <el-form-item label="年龄" required>
+              <el-input-number 
+                v-model="formData.age" 
+                :min="18" 
+                :max="60" 
+                placeholder="请输入年龄"
+                @change="handleChange" 
+                class="full-width-input"
+              />
+            </el-form-item>
+          </div>
+        </el-collapse-item>
+        
         <!-- 工作收入 - 最重要，排在第一位 -->
         <el-collapse-item name="work" class="priority-section">
           <template #title>
@@ -134,6 +165,13 @@
           </template>
           
           <div class="section-content">
+            <el-form-item v-if="isSingleMode" label="性别" required>
+              <el-radio-group v-model="formData.gender" @change="handleChange">
+                <el-radio label="male">男</el-radio>
+                <el-radio label="female">女</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            
             <el-form-item label="年龄" required>
               <el-input-number 
                 v-model="formData.age" 
@@ -246,23 +284,27 @@ export default {
   props: {
     title: {
       type: String,
-      required: true
+      default: '个人信息'
     },
     gender: {
       type: String,
-      required: true,
+      default: 'male',
       validator: (value) => ['male', 'female'].includes(value)
     },
     modelValue: {
       type: Object,
       required: true
+    },
+    isSingleMode: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['update:modelValue'],
   data() {
     return {
-      // 默认展开工作收入和教育背景（最重要的两个部分）
-      activeCollapse: ['work', 'education'],
+      // 默认展开的折叠面板
+      activeCollapse: this.isSingleMode ? ['basic', 'work', 'education'] : ['work', 'education'],
       educationOptions: EDUCATION_OPTIONS,
       universityTierOptions: UNIVERSITY_TIER_OPTIONS,
       appearanceOptions: APPEARANCE_OPTIONS,
@@ -271,8 +313,11 @@ export default {
     }
   },
   computed: {
+    currentGender() {
+      return this.isSingleMode ? (this.formData.gender || 'male') : this.gender
+    },
     genderIcon() {
-      return this.gender === 'male' ? 'Male' : 'Female'
+      return this.currentGender === 'male' ? 'Male' : 'Female'
     },
     formData: {
       get() {

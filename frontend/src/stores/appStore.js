@@ -88,8 +88,10 @@ export const useAppStore = defineStore('app', () => {
     try {
       const config = await configAPI.getSystemConfig()
       systemConfig.value = { ...systemConfig.value, ...config }
+      return config
     } catch (error) {
       console.error('加载系统配置失败:', error)
+      throw error
     }
   }
 
@@ -121,20 +123,25 @@ export const useAppStore = defineStore('app', () => {
     notifications.value = []
   }
 
-  const initializeApp = () => {
-    // 从localStorage恢复设置
-    const savedTheme = localStorage.getItem('theme')
-    if (savedTheme) {
-      setTheme(savedTheme)
+  const initializeApp = async () => {
+    try {
+      // 从localStorage恢复设置
+      const savedTheme = localStorage.getItem('theme')
+      if (savedTheme) {
+        setTheme(savedTheme)
+      }
+      
+      const savedLanguage = localStorage.getItem('language')
+      if (savedLanguage) {
+        setLanguage(savedLanguage)
+      }
+      
+      // 尝试加载配置，但不阻塞应用启动
+      await loadSystemConfig()
+    } catch (error) {
+      // 静默处理错误，使用默认配置
+      console.log('使用默认系统配置')
     }
-    
-    const savedLanguage = localStorage.getItem('language')
-    if (savedLanguage) {
-      setLanguage(savedLanguage)
-    }
-    
-    // 加载配置
-    loadSystemConfig()
   }
 
   return {
