@@ -90,7 +90,7 @@
                 <div class="dimension-header">
                   <div class="dimension-info">
                     <h4 class="dimension-title">{{ dimension.name }}</h4>
-                    <span class="dimension-weight">权重 {{ dimension.weight }}%</span>
+                    <!-- <span class="dimension-weight">权重 {{ dimension.weight }}%</span> -->
                   </div>
                   <div class="dimension-score">
                     <span class="score-value">{{ dimension.score }}</span>

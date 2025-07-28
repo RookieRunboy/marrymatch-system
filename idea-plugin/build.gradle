@@ -1,0 +1,73 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '1.16.1'
+}
+
+group = 'com.marrymatch'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    testImplementation 'junit:junit:4.13.2'
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    version = '2023.2.5'
+    type = 'IC' // Target IDE Platform
+    plugins = ['com.intellij.java']
+}
+
+patchPluginXml {
+    sinceBuild = '232'
+    untilBuild = '241.*'
+    
+    pluginDescription = """
+    <![CDATA[
+    MARRYMATCH - 配吗？择偶评分系统IDEA插件版本
+    <br/>
+    一个基于量化指标的择偶评分工具，帮助您理性分析择偶条件。
+    <br/>
+    功能特性：
+    <ul>
+        <li>个人条件评估</li>
+        <li>匹配度分析</li>
+        <li>评分报告生成</li>
+        <li>数据可视化</li>
+    </ul>
+    ]]>
+    """
+    
+    changeNotes = """
+    <![CDATA[
+    <h3>1.0.0</h3>
+    <ul>
+        <li>初始版本发布</li>
+        <li>支持个人条件评估</li>
+        <li>支持匹配度分析</li>
+        <li>支持评分报告生成</li>
+    </ul>
+    ]]>
+    """
+}
+
+tasks {
+    withType(JavaCompile) {
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
+        options.encoding = "UTF-8"
+    }
+
+    patchPluginXml {
+        dependsOn("buildSearchableOptions")
+    }
+
+    publishPlugin {
+        token = System.getenv("PUBLISH_TOKEN")
+    }
+}

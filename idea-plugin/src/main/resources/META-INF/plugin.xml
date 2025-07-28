@@ -1,0 +1,80 @@
+<idea-plugin>
+    <id>com.marrymatch.plugin</id>
+    <name>MARRYMATCH - 择偶评分系统</name>
+    <vendor email="support@marrymatch.com" url="https://github.com/RookieRunboy/marrymatch-system">MARRYMATCH Team</vendor>
+
+    <description><![CDATA[
+    MARRYMATCH - 配吗？择偶评分系统IDEA插件版本
+    <br/>
+    一个基于量化指标的择偶评分工具，帮助您理性分析择偶条件。
+    <br/>
+    <h3>功能特性：</h3>
+    <ul>
+        <li>📊 个人条件量化评估</li>
+        <li>🎯 匹配度精准分析</li>
+        <li>📈 可视化评分报告</li>
+        <li>💡 智能建议推荐</li>
+        <li>📋 数据导出功能</li>
+    </ul>
+    
+    <h3>使用方法：</h3>
+    <ol>
+        <li>打开 Tools -> MARRYMATCH</li>
+        <li>选择评估模式（个人评估/匹配分析）</li>
+        <li>填写相关信息</li>
+        <li>查看评分结果和建议</li>
+    </ol>
+    ]]></description>
+
+    <change-notes><![CDATA[
+    <h3>1.0.0</h3>
+    <ul>
+        <li>🎉 初始版本发布</li>
+        <li>✅ 支持个人条件评估</li>
+        <li>✅ 支持匹配度分析</li>
+        <li>✅ 支持评分报告生成</li>
+        <li>✅ 支持数据可视化</li>
+    </ul>
+    ]]></change-notes>
+
+    <!-- Product and plugin compatibility requirements -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Tool Window -->
+        <toolWindow id="MARRYMATCH" 
+                   secondary="true" 
+                   icon="/icons/marrymatch.png" 
+                   anchor="right" 
+                   factoryClass="com.marrymatch.plugin.toolwindow.MarryMatchToolWindowFactory"/>
+        
+        <!-- Application Service -->
+        <applicationService serviceImplementation="com.marrymatch.plugin.services.ScoreCalculatorService"/>
+        <applicationService serviceImplementation="com.marrymatch.plugin.services.DataStorageService"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+        <group id="MarryMatchActionGroup" text="MARRYMATCH" description="择偶评分系统">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            
+            <action id="MarryMatch.OpenToolWindow" 
+                   class="com.marrymatch.plugin.actions.OpenToolWindowAction" 
+                   text="打开择偶评分系统" 
+                   description="打开MARRYMATCH择偶评分工具窗口">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt M"/>
+            </action>
+            
+            <action id="MarryMatch.PersonalEvaluation" 
+                   class="com.marrymatch.plugin.actions.PersonalEvaluationAction" 
+                   text="个人条件评估" 
+                   description="评估个人择偶条件"/>
+                   
+            <action id="MarryMatch.MatchAnalysis" 
+                   class="com.marrymatch.plugin.actions.MatchAnalysisAction" 
+                   text="匹配度分析" 
+                   description="分析两人匹配度"/>
+        </group>
+    </actions>
+</idea-plugin>

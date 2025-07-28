@@ -49,7 +49,7 @@
             <div class="section-title">
               <el-icon class="section-icon"><Money /></el-icon>
               <span class="section-text">工作收入</span>
-              <el-tag size="small" type="danger" class="weight-tag">权重40%</el-tag>
+              <!-- <el-tag size="small" type="danger" class="weight-tag">权重40%</el-tag> -->
             </div>
           </template>
           
@@ -92,7 +92,7 @@
             <div class="section-title">
               <el-icon class="section-icon"><School /></el-icon>
               <span class="section-text">教育背景</span>
-              <el-tag size="small" type="warning" class="weight-tag">权重25%</el-tag>
+              <!-- <el-tag size="small" type="warning" class="weight-tag">权重25%</el-tag> -->
             </div>
           </template>
           
@@ -133,7 +133,7 @@
             <div class="section-title">
               <el-icon class="section-icon"><House /></el-icon>
               <span class="section-text">资产住房</span>
-              <el-tag size="small" type="success" class="weight-tag">权重15%</el-tag>
+              <!-- <el-tag size="small" type="success" class="weight-tag">权重15%</el-tag> -->
             </div>
           </template>
           
@@ -160,7 +160,7 @@
             <div class="section-title">
               <el-icon class="section-icon"><User /></el-icon>
               <span class="section-text">外在条件</span>
-              <el-tag size="small" type="info" class="weight-tag">权重15%</el-tag>
+              <!-- <el-tag size="small" type="info" class="weight-tag">权重15%</el-tag> -->
             </div>
           </template>
           
@@ -206,7 +206,7 @@
             <div class="section-title">
               <el-icon class="section-icon"><Avatar /></el-icon>
               <span class="section-text">家庭背景</span>
-              <el-tag size="small" class="weight-tag">权重5%</el-tag>
+              <!-- <el-tag size="small" class="weight-tag">权重5%</el-tag> -->
             </div>
           </template>
           

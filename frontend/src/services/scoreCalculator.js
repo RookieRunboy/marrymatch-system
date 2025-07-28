@@ -1,11 +1,22 @@
-// 第一阶段评分权重配置 - 物质条件导向
-export const PHASE1_SCORE_WEIGHTS = {
-  workIncome: 0.40,        // 工作收入 40%
-  education: 0.25,         // 教育背景 25%
+// 第一阶段评分权重配置 - 性别差异化权重
+export const MALE_SCORE_WEIGHTS = {
+  workIncome: 0.25,        // 工作收入 25%
+  education: 0.15,         // 教育背景 15%
   physicalAttributes: 0.15, // 外在条件 15%
-  assets: 0.15,            // 资产住房 15%
-  familyBackground: 0.05   // 家庭背景 5%
+  assets: 0.25,            // 资产住房 25%
+  familyBackground: 0.20   // 家庭背景 20%
 }
+
+export const FEMALE_SCORE_WEIGHTS = {
+  workIncome: 0.15,        // 工作收入 15%
+  education: 0.25,         // 教育背景 25%
+  physicalAttributes: 0.25, // 外在条件 25%
+  assets: 0.15,            // 资产住房 15%
+  familyBackground: 0.20   // 家庭背景 20%
+}
+
+// 保持向后兼容的默认权重（使用男方权重）
+export const PHASE1_SCORE_WEIGHTS = { ...MALE_SCORE_WEIGHTS }
 
 // 权重验证规则
 export const WEIGHT_VALIDATION_RULES = {
@@ -16,7 +27,27 @@ export const WEIGHT_VALIDATION_RULES = {
 }
 
 // 默认权重配置（用于重置）
-export const DEFAULT_WEIGHTS = { ...PHASE1_SCORE_WEIGHTS }
+export const DEFAULT_MALE_WEIGHTS = { ...MALE_SCORE_WEIGHTS }
+export const DEFAULT_FEMALE_WEIGHTS = { ...FEMALE_SCORE_WEIGHTS }
+export const DEFAULT_WEIGHTS = { ...MALE_SCORE_WEIGHTS } // 保持向后兼容
+
+/**
+ * 根据性别获取对应的权重配置
+ * @param {string} gender - 性别 ('male' 或 'female')
+ * @returns {Object} 权重配置对象
+ */
+export const getWeightsByGender = (gender) => {
+  return gender === 'male' ? MALE_SCORE_WEIGHTS : FEMALE_SCORE_WEIGHTS
+}
+
+/**
+ * 根据性别获取默认权重配置
+ * @param {string} gender - 性别 ('male' 或 'female')
+ * @returns {Object} 默认权重配置对象
+ */
+export const getDefaultWeightsByGender = (gender) => {
+  return gender === 'male' ? DEFAULT_MALE_WEIGHTS : DEFAULT_FEMALE_WEIGHTS
+}
 
 // 工作单位系数系统 - 体现稳定性和资源优势
 export const WORK_UNIT_MULTIPLIERS = {
@@ -207,47 +238,52 @@ export const calculateFamilyScore = (parentsIncome, onlyChild) => {
 }
 
 /**
- * 计算个人综合得分
+ * 计算个人综合得分（支持性别差异化权重）
  * @param {Object} person - 个人信息对象
  * @returns {number} 综合得分
  */
 export const calculatePersonScore = (person) => {
+  // 根据性别选择权重配置
+  const weights = person.gender === 'male' ? MALE_SCORE_WEIGHTS : FEMALE_SCORE_WEIGHTS
   let score = 0
   
-  // 工作收入评分 (40%)
+  // 工作收入评分
   const workIncomeScore = calculateWorkIncomeScore(person.salary, person.workUnit)
-  score += workIncomeScore * PHASE1_SCORE_WEIGHTS.workIncome
+  score += workIncomeScore * weights.workIncome
   
-  // 教育背景评分 (25%)
+  // 教育背景评分
   const educationScore = calculateEducationScore(person.education, person.universityTier)
-  score += educationScore * PHASE1_SCORE_WEIGHTS.education
+  score += educationScore * weights.education
   
-  // 外在条件评分 (15%)
+  // 外在条件评分
   const physicalScore = calculatePhysicalScore(
     person.gender, 
     person.height, 
     person.weight, 
     person.appearance
   )
-  score += physicalScore * PHASE1_SCORE_WEIGHTS.physicalAttributes
+  score += physicalScore * weights.physicalAttributes
   
-  // 资产住房评分 (15%)
+  // 资产住房评分
   const assetsScore = calculateAssetsScore(person.housingStatus, person.savings)
-  score += assetsScore * PHASE1_SCORE_WEIGHTS.assets
+  score += assetsScore * weights.assets
   
-  // 家庭背景评分 (5%)
+  // 家庭背景评分
   const familyScore = calculateFamilyScore(person.parentsIncome, person.onlyChild)
-  score += familyScore * PHASE1_SCORE_WEIGHTS.familyBackground
+  score += familyScore * weights.familyBackground
   
   return Math.round(score)
 }
 
 /**
- * 计算详细评分分解
+ * 计算详细评分分解（支持性别差异化权重）
  * @param {Object} person - 个人信息对象
  * @returns {Object} 详细评分对象
  */
 export const calculateDetailedScores = (person) => {
+  // 根据性别选择权重配置
+  const weights = person.gender === 'male' ? MALE_SCORE_WEIGHTS : FEMALE_SCORE_WEIGHTS
+  
   const workIncomeScore = calculateWorkIncomeScore(person.salary, person.workUnit)
   const educationScore = calculateEducationScore(person.education, person.universityTier)
   const physicalScore = calculatePhysicalScore(
@@ -260,11 +296,11 @@ export const calculateDetailedScores = (person) => {
   const familyScore = calculateFamilyScore(person.parentsIncome, person.onlyChild)
   
   const totalScore = Math.round(
-    workIncomeScore * PHASE1_SCORE_WEIGHTS.workIncome +
-    educationScore * PHASE1_SCORE_WEIGHTS.education +
-    physicalScore * PHASE1_SCORE_WEIGHTS.physicalAttributes +
-    assetsScore * PHASE1_SCORE_WEIGHTS.assets +
-    familyScore * PHASE1_SCORE_WEIGHTS.familyBackground
+    workIncomeScore * weights.workIncome +
+    educationScore * weights.education +
+    physicalScore * weights.physicalAttributes +
+    assetsScore * weights.assets +
+    familyScore * weights.familyBackground
   )
   
   return {
@@ -274,7 +310,57 @@ export const calculateDetailedScores = (person) => {
     physical: physicalScore,
     assets: assetsScore,
     family: familyScore,
-    adjustedIncome: person.salary * (WORK_UNIT_MULTIPLIERS[person.workUnit] || 0.8)
+    adjustedIncome: person.salary * (WORK_UNIT_MULTIPLIERS[person.workUnit] || 0.8),
+    weights: weights
+  }
+}
+
+/**
+ * 获取男女权重对比信息
+ * @returns {Object} 男女权重对比对象
+ */
+export const getGenderWeightsComparison = () => {
+  return {
+    male: {
+      workIncome: { weight: MALE_SCORE_WEIGHTS.workIncome, percentage: '25%', description: '工作收入权重' },
+      education: { weight: MALE_SCORE_WEIGHTS.education, percentage: '15%', description: '教育背景权重' },
+      physicalAttributes: { weight: MALE_SCORE_WEIGHTS.physicalAttributes, percentage: '15%', description: '外在条件权重' },
+      assets: { weight: MALE_SCORE_WEIGHTS.assets, percentage: '25%', description: '资产住房权重' },
+      familyBackground: { weight: MALE_SCORE_WEIGHTS.familyBackground, percentage: '20%', description: '家庭背景权重' }
+    },
+    female: {
+      workIncome: { weight: FEMALE_SCORE_WEIGHTS.workIncome, percentage: '15%', description: '工作收入权重' },
+      education: { weight: FEMALE_SCORE_WEIGHTS.education, percentage: '25%', description: '教育背景权重' },
+      physicalAttributes: { weight: FEMALE_SCORE_WEIGHTS.physicalAttributes, percentage: '25%', description: '外在条件权重' },
+      assets: { weight: FEMALE_SCORE_WEIGHTS.assets, percentage: '15%', description: '资产住房权重' },
+      familyBackground: { weight: FEMALE_SCORE_WEIGHTS.familyBackground, percentage: '20%', description: '家庭背景权重' }
+    },
+    differences: {
+      workIncome: '男方更重视工作收入(25% vs 15%)',
+      education: '女方更重视教育背景(25% vs 15%)',
+      physicalAttributes: '女方更重视外在条件(25% vs 15%)',
+      assets: '男方更重视资产住房(25% vs 15%)',
+      familyBackground: '男女同等重视家庭背景(20% vs 20%)'
+    }
+  }
+}
+
+/**
+ * 验证性别差异化权重配置
+ * @returns {Object} 验证结果
+ */
+export const validateGenderWeights = () => {
+  const maleValidation = validateWeights(MALE_SCORE_WEIGHTS)
+  const femaleValidation = validateWeights(FEMALE_SCORE_WEIGHTS)
+  
+  return {
+    male: maleValidation,
+    female: femaleValidation,
+    isValid: maleValidation.isValid && femaleValidation.isValid,
+    summary: {
+      maleTotal: `${(Object.values(MALE_SCORE_WEIGHTS).reduce((a, b) => a + b, 0) * 100).toFixed(1)}%`,
+      femaleTotal: `${(Object.values(FEMALE_SCORE_WEIGHTS).reduce((a, b) => a + b, 0) * 100).toFixed(1)}%`
+    }
   }
 }
 
@@ -292,14 +378,18 @@ export const calculateMatchScore = (maleScore, femaleScore) => {
 }
 
 /**
- * 计算所有评分
+ * 计算所有评分（使用性别差异化权重）
  * @param {Object} maleForm - 男方信息
  * @param {Object} femaleForm - 女方信息
  * @returns {Object} 包含所有评分的对象
  */
 export const calculateAllScores = (maleForm, femaleForm) => {
-  const maleDetailedScores = calculateDetailedScores(maleForm)
-  const femaleDetailedScores = calculateDetailedScores(femaleForm)
+  // 确保性别信息正确设置
+  const maleFormWithGender = { ...maleForm, gender: 'male' }
+  const femaleFormWithGender = { ...femaleForm, gender: 'female' }
+  
+  const maleDetailedScores = calculateDetailedScores(maleFormWithGender)
+  const femaleDetailedScores = calculateDetailedScores(femaleFormWithGender)
   const matchScore = calculateMatchScore(maleDetailedScores.total, femaleDetailedScores.total)
   
   return {
@@ -307,7 +397,9 @@ export const calculateAllScores = (maleForm, femaleForm) => {
     femaleScore: femaleDetailedScores.total,
     matchScore,
     maleDetailed: maleDetailedScores,
-    femaleDetailed: femaleDetailedScores
+    femaleDetailed: femaleDetailedScores,
+    maleWeights: MALE_SCORE_WEIGHTS,
+    femaleWeights: FEMALE_SCORE_WEIGHTS
   }
 }
 
@@ -791,11 +883,13 @@ export const getWeightsDescription = (weights) => {
 /**
  * 使用自定义权重计算个人得分
  * @param {Object} person - 个人信息对象
- * @param {Object} customWeights - 自定义权重配置
+ * @param {Object} customWeights - 自定义权重配置（可选，不提供则使用性别默认权重）
  * @returns {number} 综合得分
  */
 export const calculatePersonScoreWithWeights = (person, customWeights) => {
-  const weights = normalizeWeights(customWeights)
+  // 如果没有提供自定义权重，使用性别对应的默认权重
+  const defaultWeights = getWeightsByGender(person.gender)
+  const weights = customWeights ? normalizeWeights(customWeights) : defaultWeights
   let score = 0
   
   // 工作收入评分
